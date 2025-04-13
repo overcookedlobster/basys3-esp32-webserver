@@ -1,0 +1,19 @@
+# Vivado generated files
+*.jou
+*.log
+*.backup.*
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.xpr
+vivado_project/
+.Xil/
+# Other temporary files
+./arduino/esp32_webserver/build
+./arduino/esp32_webserver/esp32_webserver.ino
+./arduino/esp32_webserver.ino
+./arduino/esp32_experimental.ino
+*.swp
+*.swo
+
