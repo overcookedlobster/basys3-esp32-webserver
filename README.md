@@ -81,7 +81,6 @@ This project implements a web server using a Pmod ESP32 connected to a Basys3 FP
    cd ~/basys3-esp32-webserver/arduino/esp32_webserver
    arduino-cli compile --fqbn esp32:esp32:esp32 .
    arduino-cli upload -p [YOUR_PORT] --fqbn esp32:esp32:esp32 .
-   arduino-cli upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32 .
    ```
    Replace `[YOUR_PORT]` with your actual port (e.g., `/dev/ttyUSB0`)
 
@@ -97,6 +96,99 @@ This project implements a web server using a Pmod ESP32 connected to a Basys3 FP
    - ESP32 RX (GPIO16) → JA1 (FPGA UART TX)
    - ESP32 GND → Pmod GND
    - ESP32 3.3V → Pmod VCC
+
+## Using TCL Scripts
+
+This project includes several TCL scripts to automate Vivado workflow tasks. These scripts are located in the `tcl/` directory.
+
+### Prerequisites
+
+- Xilinx Vivado installed (recommended version: 2020.2 or newer)
+- Vivado added to your system PATH
+
+### Important: Updating File Paths
+
+Before using the TCL scripts, you need to update the hardcoded paths in each script to match your environment:
+
+1. Open each TCL script in a text editor
+2. Replace the path `/home/workinglobster/basys3-esp32-webserver/` with your project's path
+3. Save the modified scripts
+
+For example, if your project is located at `/home/user/fpga_projects/basys3-esp32-webserver/`, you would replace:
+```
+set project_dir "/home/workinglobster/basys3-esp32-webserver/vivado_project"
+```
+with:
+```
+set project_dir "/home/user/fpga_projects/basys3-esp32-webserver/vivado_project"
+```
+
+### Available Scripts
+
+1. **create_project.tcl**: Creates a new Vivado project with all required source files.
+2. **run_synthesis.tcl**: Runs synthesis, implementation, and generates the bitstream.
+3. **program_fpga.tcl**: Programs the Basys3 FPGA with the generated bitstream.
+4. **run_simulation.tcl**: Runs the behavioral simulation with custom settings.
+5. **reset_and_run.tcl**: Resets the synthesis run and performs a clean build.
+
+### Running TCL Scripts
+
+You can run these scripts in two ways:
+
+#### Method 1: Vivado GUI
+
+1. Open Vivado
+2. Navigate to Tools -> Run Tcl Script...
+3. Browse to the TCL script you want to run
+4. Click OK
+
+#### Method 2: Command Line
+
+Run scripts from the command line using:
+
+```bash
+vivado -mode batch -source tcl/script_name.tcl
+```
+
+### Common Usage Examples
+
+**Create a new project:**
+```bash
+vivado -mode batch -source tcl/create_project.tcl
+```
+
+**Run synthesis and generate bitstream:**
+```bash
+vivado -mode batch -source tcl/run_synthesis.tcl
+```
+
+**Program the FPGA:**
+```bash
+vivado -mode batch -source tcl/program_fpga.tcl
+```
+
+**Run simulation:**
+```bash
+vivado -mode batch -source tcl/run_simulation.tcl
+```
+
+**Reset and rebuild the project:**
+```bash
+vivado -mode batch -source tcl/reset_and_run.tcl
+```
+
+### Typical Workflow
+
+1. First, create the project using `create_project.tcl`
+2. Modify source files as needed in your preferred editor
+3. Run simulation using `run_simulation.tcl` to verify functionality
+4. Synthesize and implement using `run_synthesis.tcl`
+5. Program the FPGA using `program_fpga.tcl`
+
+### Notes
+
+- Log files are automatically moved to the `logs/` directory after script execution.
+- For programming the FPGA, ensure the device is properly connected and detected.
 
 ### Testing the Web Server
 
@@ -131,4 +223,4 @@ The FPGA sends a 1-byte packet to the ESP32 via UART (115200 baud):
 - For UART communication with FPGA: SW1.1 (SPI) = OFF, SW1.2 (BOOT) = OFF
 - For programming mode: SW1.1 (SPI) = any, SW1.2 (BOOT) = ON
 
--e arduino/esp32_webserver/build/ logs/ vivado_project/ esp32_webserver.ino esp32_webserver_example.ino .Xil/
+-e .git arduino/esp32_webserver/build/ logs/ vivado_project/ esp32_webserver.ino esp32_webserver_example.ino .Xil/
